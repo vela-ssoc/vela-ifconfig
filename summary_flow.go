@@ -2,12 +2,10 @@ package ifconfig
 
 import (
 	"github.com/shirou/gopsutil/net"
-	"github.com/vela-ssoc/vela-kit/lua"
-	"github.com/vela-ssoc/vela-kit/pipe"
 	"time"
 )
 
-func (sum *summary) flow(pp *pipe.Px, co *lua.LState) {
+func (sum *summary) flow() {
 	sv, e := net.IOCounters(true)
 	if e != nil {
 		xEnv.Errorf("interface state got fail %v", e)
@@ -20,9 +18,9 @@ func (sum *summary) flow(pp *pipe.Px, co *lua.LState) {
 
 	now := time.Now()
 	for i, s := range sv {
-		ifi := sum.iFace[i]
-		ifi.last = now
-		sum.iFace[i].flow = &flow{
+		ifi := sum.Entry[i]
+		ifi.Last = now
+		sum.Entry[i].Flow = &flow{
 			InBytes:          s.BytesRecv,
 			InPackets:        s.PacketsRecv,
 			InError:          s.Errin,

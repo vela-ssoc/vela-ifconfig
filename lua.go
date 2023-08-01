@@ -1,8 +1,8 @@
 package ifconfig
 
 import (
-	"github.com/vela-ssoc/vela-kit/vela"
 	"github.com/vela-ssoc/vela-kit/lua"
+	"github.com/vela-ssoc/vela-kit/vela"
 	"sync"
 )
 
@@ -58,6 +58,7 @@ func WithEnv(env vela.Environment) {
 	xEnv = env
 	_G = &summary{}
 	_G.update()
+	define(env.R())
 
 	xEnv.Set("ifconfig",
 		lua.NewExport("vela.ifconfig.export",

@@ -2,22 +2,40 @@ package ifconfig
 
 import (
 	cond "github.com/vela-ssoc/vela-cond"
+	"github.com/vela-ssoc/vela-kit/kind"
 	"github.com/vela-ssoc/vela-kit/lua"
 	"net"
 	"time"
 )
 
 type summary struct {
-	iFace []Interface
+	Entry []Interface
 	Err   error
 }
 
+func (sum *summary) Byte() []byte {
+	enc := kind.NewJsonEncoder()
+	enc.Arr("")
+	for _, v := range sum.Entry {
+		enc.Tab("")
+		enc.KV("index", v.Info.Index)
+		enc.KV("mtu", v.Info.MTU)
+		enc.KV("name", v.Info.Name)
+		enc.KV("mac", v.Info.HardwareAddr.String())
+		enc.KV("flags", v.Info.Flags.String())
+		//enc.Raw("flow", v.flow.Byte())
+		enc.End("},")
+	}
+	enc.End("]")
+	return enc.Bytes()
+}
+
 func (sum *summary) Len() int {
-	return len(sum.iFace)
+	return len(sum.Entry)
 }
 
 func (sum *summary) append(vi Interface) {
-	sum.iFace = append(sum.iFace, vi)
+	sum.Entry = append(sum.Entry, vi)
 }
 
 func (sum *summary) update() {
@@ -30,10 +48,15 @@ func (sum *summary) update() {
 	n := len(face)
 	now := time.Now()
 
+	entry := make([]Interface, n)
 	for i := 0; i < n; i++ {
-		ifc := Interface{face: face[i], last: now}
-		sum.iFace = append(sum.iFace, ifc)
+		ifc := Interface{Info: face[i], Last: now}
+		ifc.patch()
+		entry[i] = ifc
 	}
+
+	sum.Entry = entry
+	sum.flow()
 }
 
 func (sum *summary) ok() bool {
@@ -51,10 +74,11 @@ func (sum *summary) lookup(cnd *cond.Cond) (ret lua.Slice) {
 
 	n := sum.Len()
 	for i := 0; i < n; i++ {
-		ifi := sum.iFace[i]
-		if cnd.Match(&ifi) {
-			ret = append(ret, &ifi)
+		ifi := sum.Entry[i]
+		if cnd != nil && !cnd.Match(&ifi) {
+			continue
 		}
+		ret = append(ret, &ifi)
 	}
 	return
 }

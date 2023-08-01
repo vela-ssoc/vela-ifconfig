@@ -19,7 +19,7 @@ func (ifi *Interface) Peek() lua.LValue                       { return ifi }
 func (ifi *Interface) addrL(L *lua.LState) int {
 	n := L.CheckInt(1)
 
-	addr, err := ifi.face.Addrs()
+	addr, err := ifi.Info.Addrs()
 	if err != nil {
 		return 0
 	}
@@ -35,7 +35,7 @@ func (ifi *Interface) addrL(L *lua.LState) int {
 }
 
 func (ifi *Interface) helper(match func(string) bool) string {
-	addr, err := ifi.face.Addrs()
+	addr, err := ifi.Info.Addrs()
 	if err != nil {
 		return ""
 	}
@@ -73,7 +73,7 @@ func (ifi *Interface) ipv6L() string {
 }
 
 func (ifi *Interface) CompareIP(filter func(string) bool, val string, method cond.Method) bool {
-	naddr, err := ifi.face.Addrs()
+	naddr, err := ifi.Info.Addrs()
 	if err != nil {
 		return false
 	}
@@ -96,19 +96,19 @@ func (ifi *Interface) Compare(key string, val string, method cond.Method) bool {
 	switch key {
 
 	case "name":
-		return method(ifi.face.Name, val)
+		return method(ifi.Info.Name, val)
 
 	case "flag":
-		return method(ifi.face.Flags.String(), val)
+		return method(ifi.Info.Flags.String(), val)
 
 	case "index":
-		return method(strconv.Itoa(ifi.face.Index), val)
+		return method(strconv.Itoa(ifi.Info.Index), val)
 
 	case "mac":
 		return method(ifi.Mac(), val)
 
 	case "mtu":
-		return method(strconv.Itoa(ifi.face.MTU), val)
+		return method(strconv.Itoa(ifi.Info.MTU), val)
 
 	case "addr":
 		return ifi.CompareIP(nil, val, method)
@@ -129,19 +129,19 @@ func (ifi *Interface) Index(L *lua.LState, key string) lua.LValue {
 	switch key {
 
 	case "name":
-		return lua.S2L(ifi.face.Name)
+		return lua.S2L(ifi.Info.Name)
 
 	case "flag":
-		return lua.S2L(ifi.face.Flags.String())
+		return lua.S2L(ifi.Info.Flags.String())
 
 	case "index":
-		return lua.LInt(ifi.face.Index)
+		return lua.LInt(ifi.Info.Index)
 
 	case "mac":
 		return lua.S2L(ifi.Mac())
 
 	case "mtu":
-		return lua.LInt(ifi.face.MTU)
+		return lua.LInt(ifi.Info.MTU)
 
 	case "addr":
 		return lua.NewFunction(ifi.addrL)

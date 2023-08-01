@@ -1,7 +1,7 @@
 package ifconfig
 
 import (
-	"github.com/bytedance/sonic"
+	"encoding/json"
 	"github.com/vela-ssoc/vela-kit/lua"
 )
 
@@ -13,7 +13,7 @@ func (f *flow) AssertFunction() (*lua.LFunction, bool) { return nil, false }
 func (f *flow) Peek() lua.LValue                       { return f }
 
 func (f *flow) Byte() []byte {
-	chunk, _ := sonic.Marshal(f)
+	chunk, _ := json.Marshal(f)
 	return chunk
 }
 
@@ -31,7 +31,6 @@ func (f *flow) Index(L *lua.LState, key string) lua.LValue {
 		return lua.LNumber(f.InBytesPerSec)
 	case "in_pps":
 		return lua.LNumber(f.InPacketsPerSec)
-
 	case "out_bytes":
 		return lua.LNumber(f.OutBytes)
 	case "out_packets":

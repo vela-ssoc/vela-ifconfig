@@ -5,19 +5,19 @@ import (
 )
 
 type flow struct {
-	InBytes         uint64
-	InPackets       uint64
-	InError         uint64
-	InDropped       uint64
-	InBytesPerSec   float64
-	InPacketsPerSec float64
+	InBytes         uint64  `json:"in_bytes"`
+	InPackets       uint64  `json:"in_packets"`
+	InError         uint64  `json:"in_error"`
+	InDropped       uint64  `json:"in_dropped"`
+	InBytesPerSec   float64 `json:"in_bytes_per_sec"`
+	InPacketsPerSec float64 `json:"in_packets_per_sec"`
 
-	OutBytes         uint64
-	OutPackets       uint64
-	OutError         uint64
-	OutDropped       uint64
-	OutBytesPerSec   float64
-	OutPacketsPerSec float64
+	OutBytes         uint64  `json:"out_bytes"`
+	OutPackets       uint64  `json:"out_packets"`
+	OutError         uint64  `json:"out_error"`
+	OutDropped       uint64  `json:"out_dropped"`
+	OutBytesPerSec   float64 `json:"out_bytes_per_sec"`
+	OutPacketsPerSec float64 `json:"out_packets_per_sec"`
 }
 
 func (f *flow) ToLValue() lua.LValue {

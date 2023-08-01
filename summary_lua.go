@@ -36,7 +36,7 @@ func (sum *summary) Meta(L *lua.LState, key lua.LValue) lua.LValue {
 }
 
 func (sum *summary) r(idx int) lua.LValue {
-	n := len(sum.iFace)
+	n := len(sum.Entry)
 	if n == 0 {
 		return lua.LNil
 	}
@@ -45,7 +45,7 @@ func (sum *summary) r(idx int) lua.LValue {
 		return lua.LNil
 	}
 
-	return &sum.iFace[idx-1]
+	return &sum.Entry[idx-1]
 }
 
 func (sum *summary) pipeL(L *lua.LState) int {
@@ -57,7 +57,7 @@ func (sum *summary) pipeL(L *lua.LState) int {
 	}
 
 	for i := 0; i < n; i++ {
-		vx := sum.iFace[i]
+		vx := sum.Entry[i]
 		pp.Do(&vx, L, func(err error) {
 			xEnv.Errorf("rock interface pipe fail %v", err)
 		})
@@ -98,8 +98,8 @@ func (sum *summary) nameL(L *lua.LState) int {
 
 func (sum *summary) flowL(L *lua.LState) int {
 	tt := L.IsInt(1)
-	pp := pipe.NewByLua(L, pipe.Seek(1))
-	co := xEnv.Clone(L)
+	//pp := pipe.NewByLua(L, pipe.Seek(1))
+	//co := xEnv.Clone(L)
 
 	if tt <= 0 {
 		tt = 1000
@@ -118,7 +118,7 @@ func (sum *summary) flowL(L *lua.LState) int {
 				return
 
 			case <-tk.C:
-				sum.flow(pp, co)
+				sum.flow()
 			}
 		}
 	}
